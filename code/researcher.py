@@ -104,7 +104,7 @@ class NewsResearcher:
             completion = self.client.chat.completions.create(
                 model="openai/gpt-oss-120b",
                 messages=[
-                    {"role": "system", "content": "You are a expert fact-checker."},
+                    {"role": "system", "content": "You are an expert fact-checker. You MUST NOT use or invoke any external tools, functions, or search commands. You do not have access to any tools (like web.run). Respond ONLY with a raw JSON object containing the verdict, explanation, and right_answer using the provided web search results."},
                     {"role": "user", "content": prompt}
                 ],
                 temperature=1,
