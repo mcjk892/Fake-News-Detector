@@ -110,13 +110,14 @@ class NewsResearcher:
                 "verdict": "Analyzing...",
                 "explanation": explanation,
                 "right_answer": "Add your API key (GROK_API_KEY) in the .env file to get a definitive AI-powered verdict and fact-check.",
-                "sources": search_urls
+                "sources": search_urls,
+                "suggestions": []
             }
         
         # 3. AI Powered Analysis (Using User's Specific Model & Client)
         try:
             if not self.client:
-                return {"verdict": "Error", "explanation": "API client not initialized. Check your .env file.", "right_answer": "Add GROK_API_KEY to .env", "sources": search_urls}
+                return {"verdict": "Error", "explanation": "API client not initialized. Check your .env file.", "right_answer": "Add GROK_API_KEY to .env", "sources": search_urls, "suggestions": []}
 
             # Prepare search results for the LLM
             search_info = ""
@@ -135,9 +136,10 @@ class NewsResearcher:
             1. Verdict (True, False, or Uncertain)
             2. Concise Explanation (Why is it true/false based on search results?)
             3. The Right Answer (Fact-check correction)
+            4. Related Suggestions (Provide a list of 3-4 highly relevant, specific related terms or claims the user might want to search for next, especially if the search is broad or ambiguous. For example, if searching 'ball', suggestions could be ['Cricket Ball specifications', 'Volleyball rules', 'Football matches'])
             
             Return ONLY a JSON object with:
-            {{ "verdict": "...", "explanation": "...", "right_answer": "..." }}
+            {{ "verdict": "...", "explanation": "...", "right_answer": "...", "suggestions": ["...", "...", "..."] }}
             """
             
             # Using user's specific model and client structure
@@ -163,13 +165,16 @@ class NewsResearcher:
             if match:
                 result = json.loads(match.group())
                 result['sources'] = search_urls
+                if 'suggestions' not in result or not isinstance(result['suggestions'], list):
+                    result['suggestions'] = []
                 return result
             
             return {
                 "verdict": "Parse Error",
                 "explanation": "Could not parse AI response",
                 "right_answer": ai_data[:500],
-                "sources": search_urls
+                "sources": search_urls,
+                "suggestions": []
             }
 
         except Exception as e:
@@ -178,7 +183,8 @@ class NewsResearcher:
                 "verdict": "System Error",
                 "explanation": str(e),
                 "right_answer": "Something went wrong in the research engine.",
-                "sources": search_urls
+                "sources": search_urls,
+                "suggestions": []
             }
 
 researcher = NewsResearcher()

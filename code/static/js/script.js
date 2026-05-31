@@ -43,6 +43,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const rightAnswer = document.getElementById('rightAnswer');
     const sourcesBox = document.getElementById('sourcesBox');
     const sourcesList = document.getElementById('sourcesList');
+    const suggestionsBox = document.getElementById('suggestionsBox');
+    const suggestionsList = document.getElementById('suggestionsList');
 
     // Enter to Search
     newsInput.addEventListener('keydown', (e) => {
@@ -90,6 +92,8 @@ document.addEventListener('DOMContentLoaded', () => {
         result.classList.add('hidden');
         sourcesBox.classList.add('hidden');
         sourcesList.innerHTML = '';
+        suggestionsBox.classList.add('hidden');
+        suggestionsList.innerHTML = '';
         document.querySelector('.input-section').classList.remove('hidden');
     });
 
@@ -188,6 +192,31 @@ document.addEventListener('DOMContentLoaded', () => {
             sourcesBox.classList.remove('hidden');
         } else {
             sourcesBox.classList.add('hidden');
+        }
+
+        // Render suggestions if available
+        if (data.suggestions && data.suggestions.length > 0) {
+            suggestionsList.innerHTML = '';
+            data.suggestions.forEach(s => {
+                const button = document.createElement('button');
+                button.className = 'suggestion-tag';
+                
+                const icon = document.createElement('i');
+                icon.className = 'fas fa-search';
+                
+                button.appendChild(icon);
+                button.appendChild(document.createTextNode(s));
+                
+                button.addEventListener('click', () => {
+                    newsInput.value = s;
+                    analyzeBtn.click();
+                });
+                
+                suggestionsList.appendChild(button);
+            });
+            suggestionsBox.classList.remove('hidden');
+        } else {
+            suggestionsBox.classList.add('hidden');
         }
 
         showSection('result');
