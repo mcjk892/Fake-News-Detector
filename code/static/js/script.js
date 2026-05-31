@@ -41,6 +41,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const verdictBadge = document.getElementById('verdictBadge');
     const explanation = document.getElementById('explanation');
     const rightAnswer = document.getElementById('rightAnswer');
+    const sourcesBox = document.getElementById('sourcesBox');
+    const sourcesList = document.getElementById('sourcesList');
 
     // Enter to Search
     newsInput.addEventListener('keydown', (e) => {
@@ -86,6 +88,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Hide result and loading specifically
         loading.classList.add('hidden');
         result.classList.add('hidden');
+        sourcesBox.classList.add('hidden');
+        sourcesList.innerHTML = '';
         document.querySelector('.input-section').classList.remove('hidden');
     });
 
@@ -148,6 +152,43 @@ document.addEventListener('DOMContentLoaded', () => {
         // Show explanation and truth
         explanation.textContent = data.explanation;
         rightAnswer.textContent = data.right_answer;
+
+        // Render sources if available
+        if (data.sources && data.sources.length > 0) {
+            sourcesList.innerHTML = '';
+            data.sources.forEach(src => {
+                const li = document.createElement('li');
+                li.className = 'source-item';
+                
+                const a = document.createElement('a');
+                a.href = src;
+                a.target = '_blank';
+                a.className = 'source-link';
+                
+                const icon = document.createElement('i');
+                icon.className = 'fas fa-external-link-alt';
+                
+                // Get clean domain name or show full link if short
+                let domain = src;
+                try {
+                    const urlObj = new URL(src);
+                    domain = urlObj.hostname.replace('www.', '') + urlObj.pathname;
+                    if (domain.length > 60) {
+                        domain = domain.substring(0, 57) + '...';
+                    }
+                } catch (e) {
+                    // Fallback to full string if URL parse fails
+                }
+                
+                a.appendChild(icon);
+                a.appendChild(document.createTextNode(domain));
+                li.appendChild(a);
+                sourcesList.appendChild(li);
+            });
+            sourcesBox.classList.remove('hidden');
+        } else {
+            sourcesBox.classList.add('hidden');
+        }
 
         showSection('result');
     }

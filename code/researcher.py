@@ -13,17 +13,57 @@ class NewsResearcher:
         if self.api_key:
             self.api_key = self.api_key.strip("'\"")
         self.client = Groq(api_key=self.api_key) if self.api_key else None
+        
+        # Google Custom Search API configuration (Optional)
+        self.google_api_key = os.getenv("GOOGLE_SEARCH_API_KEY")
+        if self.google_api_key:
+            self.google_api_key = self.google_api_key.strip("'\"")
+        self.google_cse_id = os.getenv("GOOGLE_CSE_ID")
+        if self.google_cse_id:
+            self.google_cse_id = self.google_cse_id.strip("'\"")
 
     def get_search_results(self, query):
-        """Perform a DuckDuckGo search and return URLs."""
+        """Perform search across Google Custom Search (if configured) or DuckDuckGo."""
         results = []
+        
+        # 1. Try Google Custom Search if API Key and CSE ID are provided
+        if self.google_api_key and self.google_cse_id:
+            try:
+                print(f"Searching Google for: '{query}'")
+                url = "https://www.googleapis.com/customsearch/v1"
+                params = {
+                    "q": query,
+                    "key": self.google_api_key,
+                    "cx": self.google_cse_id,
+                    "num": 5
+                }
+                response = requests.get(url, params=params, timeout=10)
+                if response.status_code == 200:
+                    data = response.json()
+                    items = data.get("items", [])
+                    for item in items:
+                        link = item.get("link")
+                        if link:
+                            results.append(link)
+                    if results:
+                        print(f"Google Search succeeded. Found {len(results)} results.")
+                        return results
+                else:
+                    print(f"Google Search API returned status code {response.status_code}: {response.text}")
+            except Exception as e:
+                print(f"Google Search error: {e}")
+        
+        # 2. Fallback to DuckDuckGo search
         try:
+            print(f"Searching DuckDuckGo for: '{query}'")
             with DDGS() as ddgs:
                 ddgs_results = ddgs.text(query, max_results=5, backend='html')
                 for r in ddgs_results:
                     results.append(r['href'])
+            print(f"DuckDuckGo Search succeeded. Found {len(results)} results.")
         except Exception as e:
-            print(f"Search error: {e}")
+            print(f"DuckDuckGo Search error: {e}")
+            
         return results
 
     def scrape_url(self, url):
