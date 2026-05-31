@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fake News Detector | Verify Truth</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1>Fake News Detector</h1>
+                <button id="historyToggle" class="history-nav-btn" title="View History">
+                    <i class="fas fa-history"></i>
+                    <span>History</span>
+                </button>
+            </div>
+        </header>
+
+        <main>
+            <div class="input-section">
+                <div class="input-wrapper">
+                    <textarea id="newsInput" placeholder="Paste a headline or link..."></textarea>
+                    <div class="input-actions centered">
+                        <button id="analyzeBtn">Search <i class="fas fa-search"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="loading" class="loading hidden">
+                <div class="spinner"></div>
+                <p>Searching the web and analyzing sources...</p>
+            </div>
+
+            <div id="result" class="result hidden">
+                <div class="verdict-card">
+                    <div id="verdictBadge" class="badge">PENDING</div>
+                    <div class="verdict-content">
+                        <h2 id="verdictTitle">Analysis Results</h2>
+                        <div class="explanation-box">
+                            <h3>Analysis Summary</h3>
+                            <p id="explanation"></p>
+                        </div>
+                        <div class="truth-box">
+                            <h3>The Real Truth</h3>
+                            <p id="rightAnswer"></p>
+                        </div>
+                    </div>
+                </div>
+                <button id="resetBtn" class="secondary-btn">New Search</button>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 VeriFeed. Powered by Groq AI and DuckDuckGo Search.</p>
+        </footer>
+
+        <!-- History Modal -->
+        <div id="historyModal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3><i class="fas fa-history"></i> Search History</h3>
+                    <div class="modal-actions">
+                        <button id="clearHistoryBtn" class="danger-btn">Clear All</button>
+                        <button id="closeModal" class="close-btn">&times;</button>
+                    </div>
+                </div>
+                <div id="historyList" class="history-list">
+                    <p class="empty-msg">No recent searches found.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
